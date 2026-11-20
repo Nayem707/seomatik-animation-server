@@ -5,6 +5,7 @@ coverage/
 .DS_Store
 uploads/
 # Environment variables
+.env
 
 
 branch_structure.json
