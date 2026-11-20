@@ -510,6 +510,8 @@ model AppSettings {
   /// Checkout delivery charges by area (BDT).
   deliveryInsideDhaka  Decimal @default(70) @db.Decimal(10, 2)
   deliveryOutsideDhaka Decimal @default(150) @db.Decimal(10, 2)
+  /// Storefront header logo (falls back to storeName text when empty).
+  headerLogoUrl     String @default("")
   /// Storefront footer content.
   whatsapp          String @default("")
   logoUrl           String @default("")
