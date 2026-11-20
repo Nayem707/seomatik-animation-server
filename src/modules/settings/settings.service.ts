@@ -31,12 +31,16 @@ function toPublicSettings(row: {
   deliveryInsideDhaka: { toString(): string } | number;
   deliveryOutsideDhaka: { toString(): string } | number;
   whatsapp: string;
+  headerLogoUrl?: string | null;
   logoUrl: string;
   footerDescription: string;
   supportHours: string;
   copyrightName: string;
   socialLinks: unknown;
 }) {
+  // One shared logo for header, footer, and admin sidebar.
+  // Fall back to legacy headerLogoUrl if logoUrl was never set.
+  const logoUrl = row.logoUrl || row.headerLogoUrl || '';
   return {
     storeName: row.storeName,
     supportEmail: row.supportEmail,
@@ -49,7 +53,7 @@ function toPublicSettings(row: {
     deliveryInsideDhaka: Number(row.deliveryInsideDhaka),
     deliveryOutsideDhaka: Number(row.deliveryOutsideDhaka),
     whatsapp: row.whatsapp,
-    logoUrl: row.logoUrl,
+    logoUrl,
     footerDescription: row.footerDescription,
     supportHours: row.supportHours,
     copyrightName: row.copyrightName,
@@ -97,6 +101,12 @@ export const settingsService = {
       }
     }
 
+    // Keep logoUrl and legacy headerLogoUrl in sync as one brand logo.
+    const logoUpdate =
+      input.logoUrl !== undefined
+        ? { logoUrl: input.logoUrl, headerLogoUrl: input.logoUrl }
+        : {};
+
     const row = await prisma.appSettings.update({
       where: { id: DEFAULT_ID },
       data: {
@@ -107,7 +117,7 @@ export const settingsService = {
         ...(input.bdtPerUsd !== undefined ? { bdtPerUsd: input.bdtPerUsd } : {}),
         ...(input.address !== undefined ? { address: input.address } : {}),
         ...(input.whatsapp !== undefined ? { whatsapp: input.whatsapp } : {}),
-        ...(input.logoUrl !== undefined ? { logoUrl: input.logoUrl } : {}),
+        ...logoUpdate,
         ...(input.footerDescription !== undefined
           ? { footerDescription: input.footerDescription }
           : {}),
